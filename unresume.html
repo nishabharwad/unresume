@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Unresume</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Gaegu&family=Comic+Neue&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --accent:#ff69b4;
+  --panel:rgba(255,255,255,.94);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:'Comic Neue',cursive;
+  background:#f4f4f4;background-size:cover;background-position:center;
+}
+.wrapper{
+  max-width:1300px;margin:20px auto;padding:22px;
+  border:28px solid #c0c0c0;border-radius:28px;
+  background:rgba(255,255,255,.35)
+}
+header{
+  background:var(--panel);padding:34px;border-radius:26px;
+  text-align:center;margin-bottom:26px;position:relative
+}
+header h1{font-family:'Gaegu';font-size:3.8rem;margin:0}
+header p{opacity:.75}
+
+#openSettings,#shareBtn{
+  position:absolute;top:18px;background:none;border:none;
+  font-size:1.4rem;cursor:pointer
+}
+#openSettings{right:18px}
+#shareBtn{left:18px}
+
+.main{display:flex;gap:20px;flex-wrap:wrap}
+.col{flex:1;min-width:300px}
+.center{flex:2}
+
+.window{
+  background:var(--panel);
+  border:2px dashed var(--accent);
+  border-radius:22px;
+  padding:18px;
+  margin-bottom:20px;
+  display:flex;
+  flex-direction:column
+}
+.large{height:520px}
+.medium{height:380px}
+.small{height:280px}
+
+.window h2{
+  font-family:'Gaegu';
+  margin-bottom:10px;
+  border-bottom:1px dashed var(--accent);
+  text-align:center
+}
+.scroll{overflow-y:auto;flex:1}
+
+.profile img{
+  width:150px;height:150px;border-radius:50%;
+  border:3px dashed var(--accent);
+  margin:0 auto 14px;display:block
+}
+.profile input,.profile textarea{
+  width:100%;padding:10px;margin-bottom:10px;
+  border-radius:12px;border:1px dashed #aaa
+}
+.add input{
+  width:100%;padding:8px;margin-bottom:8px;
+  border-radius:10px;border:1px dashed #aaa
+}
+.list li{
+  cursor:pointer;
+  margin-bottom:4px;
+  padding:2px 2px
+}
+
+/* Spotify spacing */
+.spotify-item{
+  position:relative;
+  margin-bottom:6px;
+}
+.spotify-item iframe{
+  display:block;
+  border:none;
+}
+.spotify-item button{
+  position:absolute;top:4px;right:4px;
+  background:var(--accent);color:white;
+  border:none;border-radius:10px;
+  padding:2px 8px;cursor:pointer;font-size:.75rem
+}
+
+.yt-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:10px
+}
+.yt-grid img{
+  width:100%;border-radius:12px;cursor:pointer
+}
+
+#settingsModal{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.4)
+}
+#settingsModal .content{
+  background:var(--panel);max-width:420px;
+  margin:10% auto;padding:24px;border-radius:24px;
+  text-align:center
+}
+</style>
+</head>
+
+<body>
+<div class="wrapper">
+<header>
+  <button id="shareBtn">🔗</button>
+  <h1 id="title">your unresume</h1>
+  <p>everything you are, except what you’re paid for</p>
+  <button id="openSettings">⚙️</button>
+</header>
+
+<div class="main">
+
+<!-- LEFT -->
+<div class="col">
+  <div class="window large profile">
+    <h2>about me</h2>
+    <img id="pfp">
+    <input id="nameInput" placeholder="your name">
+    <textarea id="bio" rows="8" placeholder="who you are, not what you do"></textarea>
+  </div>
+
+  <div class="window medium">
+    <h2>🧠 journal</h2>
+    <textarea class="scroll" id="journal" placeholder="write without filtering yourself"></textarea>
+  </div>
+
+  <div class="window small">
+    <h2>🔥 current obsessions</h2>
+    <div class="add"><input id="obsInput" placeholder="obsession + enter"></div>
+    <ul class="scroll list" id="obsList"></ul>
+  </div>
+</div>
+
+<!-- CENTER -->
+<div class="col center">
+  <div class="window medium">
+    <h2>🎧 spotify</h2>
+    <div class="add">
+      <input id="spotifyInput" placeholder="spotify playlist / album / track link + enter">
+    </div>
+    <div class="scroll" id="spotifyList"></div>
+  </div>
+
+  <div class="window medium">
+    <h2>📺 youtube</h2>
+    <div class="add">
+      <input id="ytInput" placeholder="youtube link or id + enter">
+    </div>
+    <div class="scroll yt-grid" id="ytGrid"></div>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div class="col">
+  <div class="window small">
+    <h2>🎬 movies</h2>
+    <div class="add"><input id="movieInput" placeholder="movie / show + enter"></div>
+    <ul class="scroll list" id="movieList"></ul>
+  </div>
+
+  <div class="window small">
+    <h2>📚 books</h2>
+    <div class="add"><input id="bookInput" placeholder="book + enter"></div>
+    <ul class="scroll list" id="bookList"></ul>
+  </div>
+
+  <div class="window small">
+    <h2>🗺️ places</h2>
+    <div class="add"><input id="placeInput" placeholder="place + enter"></div>
+    <ul class="scroll list" id="placeList"></ul>
+  </div>
+
+  <div class="window small">
+    <h2>🧩 exploring</h2>
+    <div class="add"><input id="skillInput" placeholder="skill / language + enter"></div>
+    <ul class="scroll list" id="skillList"></ul>
+  </div>
+
+  <div class="window small">
+    <h2>📈 learning next</h2>
+    <div class="add"><input id="learnInput" placeholder="thing to learn + enter"></div>
+    <ul class="scroll list" id="learnList"></ul>
+  </div>
+
+  <div class="window small">
+    <h2>🎯 goals</h2>
+    <div class="add"><input id="goalInput" placeholder="goal + enter"></div>
+    <ul class="scroll list" id="goalList"></ul>
+  </div>
+</div>
+
+</div>
+</div>
+
+<div id="settingsModal">
+  <div class="content">
+    <input type="color" id="accentPicker"><br><br>
+    <input type="file" id="bgPicker"><br><br>
+    <input type="file" id="pfpInput"><br><br>
+    <button onclick="closeSettings()">done</button>
+  </div>
+</div>
+
+<script>
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const load=(k,d)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d));
+
+/* SHARE */
+shareBtn.onclick=()=>{
+  navigator.clipboard.writeText(window.location.href);
+  alert("Link copied! Add it to your bio ✨");
+};
+
+/* SETTINGS */
+openSettings.onclick=()=>settingsModal.style.display="block";
+function closeSettings(){settingsModal.style.display="none"}
+
+/* PROFILE */
+nameInput.value=load("name","");
+title.textContent=nameInput.value||"your unresume";
+bio.value=load("bio","");
+nameInput.oninput=()=>{title.textContent=nameInput.value;save("name",nameInput.value)}
+bio.oninput=()=>save("bio",bio.value)
+
+/* ACCENT */
+accentPicker.value=load("accent","#ff69b4");
+document.documentElement.style.setProperty("--accent",accentPicker.value);
+accentPicker.oninput=()=>{document.documentElement.style.setProperty("--accent",accentPicker.value);save("accent",accentPicker.value)}
+
+/* BG */
+const bg=load("bg",null);
+if(bg)document.body.style.backgroundImage=`url(${bg})`;
+bgPicker.onchange=e=>{
+  const r=new FileReader();
+  r.onload=()=>{document.body.style.backgroundImage=`url(${r.result})`;save("bg",r.result)}
+  r.readAsDataURL(e.target.files[0])
+}
+
+/* PFP */
+const p=load("pfp",null);if(p)pfp.src=p;
+pfpInput.onchange=e=>{
+  const r=new FileReader();
+  r.onload=()=>{pfp.src=r.result;save("pfp",r.result)}
+  r.readAsDataURL(e.target.files[0])
+}
+
+/* LIST SECTIONS */
+function listSection(input,list,key){
+  const arr=load(key,[]);
+  arr.forEach((v,i)=>{
+    const li=document.createElement("li");
+    li.textContent=v;
+    li.oncontextmenu=e=>{
+      e.preventDefault();
+      if(confirm("Remove?")){
+        arr.splice(i,1);
+        save(key,arr);
+        location.reload();
+      }
+    };
+    list.appendChild(li);
+  });
+  input.onkeypress=e=>{
+    if(e.key==="Enter"&&e.target.value.trim()){
+      arr.push(e.target.value.trim());
+      save(key,arr);
+      location.reload();
+    }
+  };
+}
+
+listSection(movieInput,movieList,"movies");
+listSection(bookInput,bookList,"books");
+listSection(placeInput,placeList,"places");
+listSection(skillInput,skillList,"skills");
+listSection(learnInput,learnList,"learn");
+listSection(goalInput,goalList,"goals");
+listSection(obsInput,obsList,"obs");
+
+/* JOURNAL */
+journal.value=load("journal","");
+journal.oninput=()=>save("journal",journal.value);
+
+/* SPOTIFY */
+const spotify=load("spotify",[]);
+spotify.forEach((src,i)=>{
+  const wrap=document.createElement("div");
+  wrap.className="spotify-item";
+  const btn=document.createElement("button");
+  btn.textContent="⋯ remove";
+  btn.onclick=()=>{
+    spotify.splice(i,1);
+    save("spotify",spotify);
+    location.reload();
+  };
+  const iframe=document.createElement("iframe");
+  iframe.src=src;
+  iframe.width="100%";
+  iframe.height="152";
+  wrap.append(btn,iframe);
+  spotifyList.appendChild(wrap);
+});
+spotifyInput.onkeypress=e=>{
+  if(e.key==="Enter"){
+    const m=e.target.value.match(/spotify\.com\/(playlist|album|track)\/([a-zA-Z0-9]+)/);
+    if(!m){alert("invalid spotify link");return}
+    spotify.push(`https://open.spotify.com/embed/${m[1]}/${m[2]}`);
+    save("spotify",spotify);
+    location.reload();
+  }
+};
+
+/* YOUTUBE */
+function extractYouTubeID(url){
+  if(/^[a-zA-Z0-9_-]{11}$/.test(url))return url;
+  const p=[/v=([^&]+)/,/youtu\.be\/([^?]+)/,/shorts\/([^?]+)/,/embed\/([^?]+)/];
+  for(const r of p){
+    const m=url.match(r);
+    if(m)return m[1];
+  }
+  return null;
+}
+
+const yt=load("yt",[]);
+yt.forEach((v,i)=>{
+  const id=extractYouTubeID(v);
+  if(!id)return;
+  const img=document.createElement("img");
+  img.src=`https://img.youtube.com/vi/${id}/0.jpg`;
+  img.onclick=()=>window.open(`https://youtube.com/watch?v=${id}`);
+  img.oncontextmenu=e=>{
+    e.preventDefault();
+    if(confirm("Remove?")){
+      yt.splice(i,1);
+      save("yt",yt);
+      location.reload();
+    }
+  };
+  ytGrid.appendChild(img);
+});
+ytInput.onkeypress=e=>{
+  if(e.key==="Enter"&&e.target.value.trim()){
+    yt.push(e.target.value.trim());
+    save("yt",yt);
+    location.reload();
+  }
+};
+</script>
+</body>
+</html>
+
+
+
+
