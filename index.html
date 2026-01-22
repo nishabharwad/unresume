@@ -322,6 +322,16 @@ ytInput.onkeypress=e=>{
     yt.push(e.target.value.trim());save("yt",yt);location.reload()
   }
 };
+// DEV RESET: Ctrl + Shift + R
+document.addEventListener("keydown", e => {
+  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "r") {
+    if (confirm("Reset Unresume?")) {
+      localStorage.clear();
+      location.reload();
+    }
+  }
+});
+
 </script>
 </body>
 </html>
