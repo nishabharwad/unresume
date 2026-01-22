@@ -4,6 +4,17 @@
 <meta charset="UTF-8">
 <title>Unresume</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- SEO / SHARE META -->
+<meta name="description" content="Unresume — everything you are, except what you’re paid for.">
+<meta property="og:title" content="Unresume">
+<meta property="og:description" content="A personal space beyond resumes.">
+<meta property="og:url" content="https://nishabharwad.github.io/unresume/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Unresume">
+<meta name="twitter:description" content="Everything you are, except what you’re paid for.">
+
 <link href="https://fonts.googleapis.com/css2?family=Gaegu&family=Comic+Neue&display=swap" rel="stylesheet">
 
 <style>
@@ -79,20 +90,13 @@ header p{opacity:.75}
   padding:2px 2px
 }
 
-/* Spotify spacing */
-.spotify-item{
-  position:relative;
-  margin-bottom:6px;
-}
-.spotify-item iframe{
-  display:block;
-  border:none;
-}
+.spotify-item{position:relative;margin-bottom:6px}
+.spotify-item iframe{display:block;border:none}
 .spotify-item button{
   position:absolute;top:4px;right:4px;
   background:var(--accent);color:white;
   border:none;border-radius:10px;
-  padding:2px 8px;cursor:pointer;font-size:.75rem
+  padding:2px 8px;font-size:.75rem;cursor:pointer
 }
 
 .yt-grid{
@@ -100,9 +104,7 @@ header p{opacity:.75}
   grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
   gap:10px
 }
-.yt-grid img{
-  width:100%;border-radius:12px;cursor:pointer
-}
+.yt-grid img{width:100%;border-radius:12px;cursor:pointer}
 
 #settingsModal{
   display:none;position:fixed;inset:0;
@@ -127,7 +129,6 @@ header p{opacity:.75}
 
 <div class="main">
 
-<!-- LEFT -->
 <div class="col">
   <div class="window large profile">
     <h2>about me</h2>
@@ -148,7 +149,6 @@ header p{opacity:.75}
   </div>
 </div>
 
-<!-- CENTER -->
 <div class="col center">
   <div class="window medium">
     <h2>🎧 spotify</h2>
@@ -167,43 +167,13 @@ header p{opacity:.75}
   </div>
 </div>
 
-<!-- RIGHT -->
 <div class="col">
-  <div class="window small">
-    <h2>🎬 movies</h2>
-    <div class="add"><input id="movieInput" placeholder="movie / show + enter"></div>
-    <ul class="scroll list" id="movieList"></ul>
-  </div>
-
-  <div class="window small">
-    <h2>📚 books</h2>
-    <div class="add"><input id="bookInput" placeholder="book + enter"></div>
-    <ul class="scroll list" id="bookList"></ul>
-  </div>
-
-  <div class="window small">
-    <h2>🗺️ places</h2>
-    <div class="add"><input id="placeInput" placeholder="place + enter"></div>
-    <ul class="scroll list" id="placeList"></ul>
-  </div>
-
-  <div class="window small">
-    <h2>🧩 exploring</h2>
-    <div class="add"><input id="skillInput" placeholder="skill / language + enter"></div>
-    <ul class="scroll list" id="skillList"></ul>
-  </div>
-
-  <div class="window small">
-    <h2>📈 learning next</h2>
-    <div class="add"><input id="learnInput" placeholder="thing to learn + enter"></div>
-    <ul class="scroll list" id="learnList"></ul>
-  </div>
-
-  <div class="window small">
-    <h2>🎯 goals</h2>
-    <div class="add"><input id="goalInput" placeholder="goal + enter"></div>
-    <ul class="scroll list" id="goalList"></ul>
-  </div>
+  <div class="window small"><h2>🎬 movies</h2><div class="add"><input id="movieInput"></div><ul class="scroll list" id="movieList"></ul></div>
+  <div class="window small"><h2>📚 books</h2><div class="add"><input id="bookInput"></div><ul class="scroll list" id="bookList"></ul></div>
+  <div class="window small"><h2>🗺️ places</h2><div class="add"><input id="placeInput"></div><ul class="scroll list" id="placeList"></ul></div>
+  <div class="window small"><h2>🧩 exploring</h2><div class="add"><input id="skillInput"></div><ul class="scroll list" id="skillList"></ul></div>
+  <div class="window small"><h2>📈 learning next</h2><div class="add"><input id="learnInput"></div><ul class="scroll list" id="learnList"></ul></div>
+  <div class="window small"><h2>🎯 goals</h2><div class="add"><input id="goalInput"></div><ul class="scroll list" id="goalList"></ul></div>
 </div>
 
 </div>
@@ -219,13 +189,25 @@ header p{opacity:.75}
 </div>
 
 <script>
+const PUBLIC_URL = "https://nishabharwad.github.io/unresume/";
+
 const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 const load=(k,d)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d));
 
 /* SHARE */
-shareBtn.onclick=()=>{
-  navigator.clipboard.writeText(window.location.href);
-  alert("Link copied! Add it to your bio ✨");
+shareBtn.onclick = async () => {
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "Unresume",
+        text: "Everything I am, except what I’m paid for.",
+        url: PUBLIC_URL
+      });
+    } catch {}
+  } else {
+    navigator.clipboard.writeText(PUBLIC_URL);
+    alert("Link copied ✨");
+  }
 };
 
 /* SETTINGS */
@@ -261,7 +243,7 @@ pfpInput.onchange=e=>{
   r.readAsDataURL(e.target.files[0])
 }
 
-/* LIST SECTIONS */
+/* LISTS */
 function listSection(input,list,key){
   const arr=load(key,[]);
   arr.forEach((v,i)=>{
@@ -270,18 +252,14 @@ function listSection(input,list,key){
     li.oncontextmenu=e=>{
       e.preventDefault();
       if(confirm("Remove?")){
-        arr.splice(i,1);
-        save(key,arr);
-        location.reload();
+        arr.splice(i,1);save(key,arr);location.reload()
       }
     };
     list.appendChild(li);
   });
   input.onkeypress=e=>{
     if(e.key==="Enter"&&e.target.value.trim()){
-      arr.push(e.target.value.trim());
-      save(key,arr);
-      location.reload();
+      arr.push(e.target.value.trim());save(key,arr);location.reload()
     }
   };
 }
@@ -305,25 +283,17 @@ spotify.forEach((src,i)=>{
   wrap.className="spotify-item";
   const btn=document.createElement("button");
   btn.textContent="⋯ remove";
-  btn.onclick=()=>{
-    spotify.splice(i,1);
-    save("spotify",spotify);
-    location.reload();
-  };
+  btn.onclick=()=>{spotify.splice(i,1);save("spotify",spotify);location.reload()};
   const iframe=document.createElement("iframe");
-  iframe.src=src;
-  iframe.width="100%";
-  iframe.height="152";
-  wrap.append(btn,iframe);
-  spotifyList.appendChild(wrap);
+  iframe.src=src;iframe.width="100%";iframe.height="152";
+  wrap.append(btn,iframe);spotifyList.appendChild(wrap);
 });
 spotifyInput.onkeypress=e=>{
   if(e.key==="Enter"){
     const m=e.target.value.match(/spotify\.com\/(playlist|album|track)\/([a-zA-Z0-9]+)/);
     if(!m){alert("invalid spotify link");return}
     spotify.push(`https://open.spotify.com/embed/${m[1]}/${m[2]}`);
-    save("spotify",spotify);
-    location.reload();
+    save("spotify",spotify);location.reload()
   }
 };
 
@@ -331,41 +301,27 @@ spotifyInput.onkeypress=e=>{
 function extractYouTubeID(url){
   if(/^[a-zA-Z0-9_-]{11}$/.test(url))return url;
   const p=[/v=([^&]+)/,/youtu\.be\/([^?]+)/,/shorts\/([^?]+)/,/embed\/([^?]+)/];
-  for(const r of p){
-    const m=url.match(r);
-    if(m)return m[1];
-  }
+  for(const r of p){const m=url.match(r);if(m)return m[1]}
   return null;
 }
 
 const yt=load("yt",[]);
 yt.forEach((v,i)=>{
-  const id=extractYouTubeID(v);
-  if(!id)return;
+  const id=extractYouTubeID(v);if(!id)return;
   const img=document.createElement("img");
   img.src=`https://img.youtube.com/vi/${id}/0.jpg`;
   img.onclick=()=>window.open(`https://youtube.com/watch?v=${id}`);
   img.oncontextmenu=e=>{
     e.preventDefault();
-    if(confirm("Remove?")){
-      yt.splice(i,1);
-      save("yt",yt);
-      location.reload();
-    }
+    if(confirm("Remove?")){yt.splice(i,1);save("yt",yt);location.reload()}
   };
   ytGrid.appendChild(img);
 });
 ytInput.onkeypress=e=>{
   if(e.key==="Enter"&&e.target.value.trim()){
-    yt.push(e.target.value.trim());
-    save("yt",yt);
-    location.reload();
+    yt.push(e.target.value.trim());save("yt",yt);location.reload()
   }
 };
 </script>
 </body>
 </html>
-
-
-
-
